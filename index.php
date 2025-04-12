@@ -46,8 +46,13 @@ if ($entity === 'incidente') {
     require_once 'controllers/HallazgoController.php';
     $controller = new HallazgoController($pdo);
 
+    // Nueva accion para actualizar mediante ajax
+
+    if ($action === 'updateEstado' && $id && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $controller->updateEstado($id, $_POST);
+    }
     // Acciones existentes para 'hallazgo'
-    if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    elseif ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $controller->insert($_POST);
     } elseif ($action === 'edit' && $id && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $controller->update($id, $_POST);
