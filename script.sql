@@ -25,7 +25,7 @@ CREATE TABLE Usuario (
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Fecha en la que se registra el usuario
 );
 
--- Crear la tabla de hallazgos
+-- Crear la tabla de hallazgos (con nueva columna id_proceso_sede para H-6568)
 CREATE TABLE Hallazgo (
     id INT AUTO_INCREMENT PRIMARY KEY,      -- Identificador único para cada hallazgo
     titulo VARCHAR(150) NOT NULL,           -- Título breve del hallazgo
@@ -34,8 +34,10 @@ CREATE TABLE Hallazgo (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Fecha de última actualización
     id_estado INT,                          -- Estado actual del hallazgo (referencia a Estado)
     id_usuario INT,                         -- Usuario responsable del hallazgo (referencia a Usuario)
+    id_proceso_sede INT,                    -- Proceso específico asignado como sede (para H-6568)
     FOREIGN KEY (id_estado) REFERENCES Estado(id),  -- Llave foránea a la tabla Estado
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id) -- Llave foránea a la tabla Usuario
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id), -- Llave foránea a la tabla Usuario
+    FOREIGN KEY (id_proceso_sede) REFERENCES Proceso(id) -- Llave foránea a la tabla Proceso para la sede
 );
 
 -- Crear la tabla de incidentes
@@ -112,18 +114,18 @@ INSERT INTO Usuario (nombre, email) VALUES
     ('Jorge Álvarez', 'jorge.alvarez@empresa.com'),
     ('Marta Sánchez', 'marta.sanchez@empresa.com');
 
--- Insertar datos de ejemplo en la tabla Hallazgo
-INSERT INTO Hallazgo (titulo, descripcion, id_estado, id_usuario) VALUES
-    ('Control de Temperatura', 'Problema en el control de temperatura en almacenamiento.', 1, 1),
-    ('Higiene en Planta', 'Falta de desinfección en área de producción.', 2, 2),
-    ('Etiquetado Incorrecto', 'Etiquetas en idioma incorrecto en empaque.', 1, 3),
-    ('Retraso en Distribución', 'Retraso en la entrega de productos a sucursales.', 3, 4),
-    ('Error en Inspección de Calidad', 'Inconsistencias en el control de calidad.', 2, 5),
-    ('Almacenamiento Inadecuado', 'Producto almacenado en lugar sin ventilación.', 1, 6),
-    ('Falta de Capacitación', 'Faltan capacitaciones sobre nuevas normativas.', 2, 7),
-    ('Incumplimiento de Normativa', 'No se cumple normativa de empaque.', 3, 8),
-    ('Problemas de Trazabilidad', 'Dificultad para rastrear origen de materia prima.', 1, 9),
-    ('Evaluación de Proveedores Deficiente', 'Proveedor no cumple con estándares.', 2, 10);
+-- Insertar datos de ejemplo en la tabla Hallazgo con id_proceso_sede
+INSERT INTO Hallazgo (titulo, descripcion, id_estado, id_usuario, id_proceso_sede) VALUES
+    ('Control de Temperatura', 'Problema en el control de temperatura en almacenamiento.', 1, 1, 2),
+    ('Higiene en Planta', 'Falta de desinfección en área de producción.', 2, 2, 5),
+    ('Etiquetado Incorrecto', 'Etiquetas en idioma incorrecto en empaque.', 1, 3, 6),
+    ('Retraso en Distribución', 'Retraso en la entrega de productos a sucursales.', 3, 4, 3),
+    ('Error en Inspección de Calidad', 'Inconsistencias en el control de calidad.', 2, 5, 1),
+    ('Almacenamiento Inadecuado', 'Producto almacenado en lugar sin ventilación.', 1, 6, 2),
+    ('Falta de Capacitación', 'Faltan capacitaciones sobre nuevas normativas.', 2, 7, 10),
+    ('Incumplimiento de Normativa', 'No se cumple normativa de empaque.', 3, 8, 6),
+    ('Problemas de Trazabilidad', 'Dificultad para rastrear origen de materia prima.', 1, 9, 7),
+    ('Evaluación de Proveedores Deficiente', 'Proveedor no cumple con estándares.', 2, 10, 8);
     
 -- Insertar datos de ejemplo en la tabla Hallazgo_Proceso para asociar hallazgos a múltiples procesos
 INSERT INTO Hallazgo_Proceso (id_hallazgo, id_proceso) VALUES
@@ -176,3 +178,19 @@ INSERT INTO Registro_PlanAccion (id_registro, origen_registro, id_plan_accion) V
     (8, 'INCIDENTE', 8),
     (9, 'INCIDENTE', 9),
     (10, 'INCIDENTE', 10);
+
+-- Insertar planes de acción adicionales para hallazgos (para H-6778)
+INSERT INTO PlanAccion (descripcion, id_usuario, fecha_inicio, fecha_fin, id_estado) VALUES
+    ('Mejorar control de temperatura en almacenamiento', 3, '2024-09-25', '2024-10-15', 1),
+    ('Implementar nuevos protocolos de limpieza', 2, '2024-09-28', '2024-10-20', 2),
+    ('Actualizar etiquetas con información bilingüe', 5, '2024-10-05', '2024-10-30', 1),
+    ('Optimizar rutas de distribución', 6, '2024-09-30', '2024-10-25', 2),
+    ('Revisar y mejorar procedimientos de calidad', 4, '2024-10-10', '2024-11-15', 1);
+
+-- Asociar planes de acción a hallazgos (para H-6778)
+INSERT INTO Registro_PlanAccion (id_registro, origen_registro, id_plan_accion) VALUES
+    (1, 'HALLAZGO', 11),
+    (2, 'HALLAZGO', 12),
+    (3, 'HALLAZGO', 13),
+    (4, 'HALLAZGO', 14),
+    (5, 'HALLAZGO', 15);
