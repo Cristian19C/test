@@ -1,3 +1,5 @@
+SET NAMES utf8;
+
 -- Eliminar la base de datos si existe y crearla nuevamente
 DROP DATABASE IF EXISTS GestionHallazgos;
 CREATE DATABASE GestionHallazgos;
