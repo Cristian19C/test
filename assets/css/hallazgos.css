@@ -30,3 +30,14 @@
 .estado-select {
   flex-grow: 1;
 }
+
+.btn-action {
+  padding: 8px 12px;
+  margin: 0 3px;
+  border-radius: 4px;
+}
+
+.btn-group-action {
+  display: flex;
+  gap: 5px;
+}
