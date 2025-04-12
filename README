@@ -1,0 +1,25 @@
+# Test
+
+Prueba tecnica
+
+## 🚀 Requisitos
+
+- PHP 7.4 o superior
+- Composer
+
+## 🛠️ Instalación
+
+1. Clonar el repositorio:
+
+- git clone https://github.com/tu-usuario/test.git
+
+
+2. Entrar al diccionario del proyecto
+
+- cd test
+
+3. Instalar las dependencias 
+
+- composer install
+
+
