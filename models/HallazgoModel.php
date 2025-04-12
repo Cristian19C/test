@@ -19,7 +19,7 @@ class HallazgoModel {
             LEFT JOIN Proceso p ON h.id_proceso_sede = p.id
         ";
 
-        // añadir filtro si se proporciona 
+        // Añadir filtro si se proporciona 
         if($filtro_sede){
             $main_query .= "WHERE h.id_proceso_sede = ?";
             $stmt = $this->pdo->prepare($main_query);
@@ -75,6 +75,27 @@ class HallazgoModel {
             return true;
         }
         return false;
+    }
+
+    //Nuevo metodo para actualizar solo el estado del hallazgo
+    public function updateEstado($id, $id_estado){
+        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET id_estado = ? WHERE id =?");
+        $result = $stmt->execute([$id_estado, $id]);
+
+        if($result){
+            // Obtener el nombre del estado para devolverlo en la respuesta
+            $estadoStmt = $this->pdo->prepare("SELECT nombre FROM Estado WHERE id = ?");
+            $estadoStmt->execute([$id_estado]);
+            $estadoNombre = $estadoStmt->fetchColumn();
+
+            return [
+                "success" => true,
+                "message" => "Estado actualizado a '$estadoNombre' con exito ",
+                "estadoNombre" => $estadoNombre
+            ];
+        }
+
+        return ['success' => false, 'message' => "Error al actualizar el estado"];
     }
 
     public function delete($id) {

@@ -6,9 +6,15 @@
     <meta charset="UTF-8">
     <title>Lista de Hallazgos</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/hallazgos.css">
+
 </head>
 <body>
 <div class="container mt-4">
+
+    <div id="alertMessage" class="alert alert-float" role="alert"></div>
+
     <h1>Lista de Hallazgos</h1>
 
     <!-- Filtro de sede -->
@@ -63,7 +69,26 @@
                 <td><?= $hallazgo['id'] ?></td>
                 <td><?= $hallazgo['titulo'] ?></td>
                 <td><?= $hallazgo['descripcion'] ?></td>
-                <td><?= $hallazgo['estado_nombre'] ?></td>
+
+                <td>
+                    <!-- Selector de estado con actualizacion AJAX -->
+                    <div class="estado-container">
+                        <select class="form-control estado-select" 
+                                data-hallazgo-id="<?= $hallazgo['id'] ?>"
+                                data-estado-actual="<?= $hallazgo['id_estado'] ?>"
+                                aria-label="Cambiar estado">
+                            <?php foreach ($estados as $estado): ?>
+                                <option value="<?= $estado['id'] ?>" <?= ($estado['id'] == $hallazgo['id_estado']) ? 'selected' : '' ?>>
+                                    <?= $estado['nombre'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <!-- Spinner de carga -->
+                        <div class="spinner-border text-primary ml-2" id="spinner-<?= $hallazgo['id'] ?>" role="status">
+                            <span class="sr-only">Actualizando...</span>
+                        </div>
+                    </div>
+                </td>
                 <td><?= $hallazgo['usuario_nombre'] ?></td>
                 <td><?= $hallazgo['sede_nombre'] ?? 'No asignada' ?></td>
                 <td>
@@ -85,5 +110,10 @@
         </tbody>
     </table>
 </div>
+
+<!-- Scripts de jQuery, Bootstrap y código AJAX para actualización de estado -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/hallazgos.js"></script>
 </body>
 </html>

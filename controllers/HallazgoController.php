@@ -20,12 +20,15 @@ class HallazgoController {
 
     public function index() {
 
-        //agregar filtro si esta presente
+        //Agregar filtro si esta presente
         $filtro_sede = isset($_GET['sede']) ? $_GET['sede']: null;
 
         $hallazgos = $this->model->getAll($filtro_sede);
 
         $sedes = $this->model->getSedes();
+
+        //Obtener todos los estados 
+        $estados = $this->estadoModel->getAll();
 
         require 'views/hallazgo/list.php';
     }
@@ -77,6 +80,18 @@ class HallazgoController {
 
         $this->model->update($id, $titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario, $id_proceso_sede);
         header('Location: index.php?entity=hallazgo&action=index');
+    }
+
+    // Nuevo metodo para actualizar el estado en tiempo real sin recargar la pagina mediante ajax
+
+    public function updateEstado($id, $data){
+        $id_estado = $data['id_estado'];
+        $result = $this->model->updateEstado($id, $id_estado);
+
+        // Respuesta en formato json debibo a ajax
+        header('Content-Type: application/json');
+        echo json_encode($result);
+        exit; 
     }
 
     public function delete($id) {

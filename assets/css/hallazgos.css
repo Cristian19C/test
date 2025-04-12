@@ -1,0 +1,32 @@
+ /* Estilos para el spinner de carga */
+ .spinner-border {
+  width: 1rem;
+  height: 1rem;
+  display: none;
+}
+
+/* Estilo para indicar que el selector de estado esta siendo cambiado */
+.estado-updating {
+  background-color: #f8f9fa;
+  opacity: 0.7;
+}
+
+/* Personalizacion del mensaje de alerta */
+.alert-float {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: none;
+}
+
+/* Contenedor del selector de estado */
+.estado-container {
+  display: flex;
+  align-items: center;
+  min-width: 150px;
+}
+
+.estado-select {
+  flex-grow: 1;
+}
