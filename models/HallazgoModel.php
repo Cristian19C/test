@@ -9,13 +9,25 @@ class HallazgoModel {
         $this->pdo = $pdo;
     }
 
-    public function getAll() {
-        $stmt = $this->pdo->query("
-            SELECT h.*, e.nombre as estado_nombre, u.nombre as usuario_nombre
+
+    public function getAll($filtro_sede = null) {
+        $main_query = "
+            SELECT h.*, e.nombre as estado_nombre, u.nombre as usuario_nombre, p.id as sede_id, p.nombre as sede_nombre
             FROM Hallazgo h
             LEFT JOIN Estado e ON h.id_estado = e.id
             LEFT JOIN Usuario u ON h.id_usuario = u.id
-        ");
+            LEFT JOIN Proceso p ON h.id_proceso_sede = p.id
+        ";
+
+        // añadir filtro si se proporciona 
+        if($filtro_sede){
+            $main_query .= "WHERE h.id_proceso_sede = ?";
+            $stmt = $this->pdo->prepare($main_query);
+            $stmt->execute([$filtro_sede]);
+        }else{
+            $stmt = $this->pdo->query($main_query);
+        }
+
         $hallazgos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($hallazgos as &$hallazgo) {
@@ -26,10 +38,11 @@ class HallazgoModel {
 
     public function getById($id) {
         $stmt = $this->pdo->prepare("
-            SELECT h.*, e.nombre as estado_nombre, u.nombre as usuario_nombre
+            SELECT h.*, e.nombre as estado_nombre, u.nombre as usuario_nombre, p.id as sede_id, p.nombre as sede_nombre
             FROM Hallazgo h
             LEFT JOIN Estado e ON h.id_estado = e.id
             LEFT JOIN Usuario u ON h.id_usuario = u.id
+            LEFT JOIN Proceso p ON h.id_proceso_sede = p.id
             WHERE h.id = ?
         ");
         $stmt->execute([$id]);
@@ -41,9 +54,9 @@ class HallazgoModel {
         return $hallazgo;
     }
 
-    public function insert($titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario) {
-        $stmt = $this->pdo->prepare("INSERT INTO Hallazgo (titulo, descripcion, id_estado, id_usuario) VALUES (?, ?, ?, ?)");
-        $result = $stmt->execute([$titulo, $descripcion, $id_estado, $id_usuario]);
+    public function insert($titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario, $id_proceso_sede) {
+        $stmt = $this->pdo->prepare("INSERT INTO Hallazgo (titulo, descripcion, id_estado, id_usuario,id_proceso_sede) VALUES (?, ?, ?, ?, ?)");
+        $result = $stmt->execute([$titulo, $descripcion, $id_estado, $id_usuario, $id_proceso_sede]);
 
         if ($result) {
             $hallazgo_id = $this->pdo->lastInsertId();
@@ -53,9 +66,9 @@ class HallazgoModel {
         return false;
     }
 
-    public function update($id, $titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario) {
-        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET titulo = ?, descripcion = ?, id_estado = ?, id_usuario = ? WHERE id = ?");
-        $result = $stmt->execute([$titulo, $descripcion, $id_estado, $id_usuario, $id]);
+    public function update($id, $titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario, $id_proceso_sede) {
+        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET titulo = ?, descripcion = ?, id_estado = ?, id_usuario = ?, id_proceso_sede = ? WHERE id = ?");
+        $result = $stmt->execute([$titulo, $descripcion, $id_estado, $id_usuario, $id_proceso_sede,$id]);
 
         if ($result) {
             $this->updateProcesos($id, $proceso_ids);
@@ -84,6 +97,11 @@ class HallazgoModel {
     public function getProcesos($hallazgo_id) {
         $stmt = $this->pdo->prepare("SELECT p.* FROM Proceso p INNER JOIN Hallazgo_Proceso hp ON p.id = hp.id_proceso WHERE hp.id_hallazgo = ?");
         $stmt->execute([$hallazgo_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getSedes(){
+        $stmt = $this->pdo->query("SELECT id, nombre, descripcion, fecha_creacion FROM Proceso ORDER BY nombre");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
