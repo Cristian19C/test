@@ -11,21 +11,46 @@
 <div class="container mt-4">
     <h1>Detalle del Hallazgo</h1>
     <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">ID: <?= $hallazgo['id'] ?> - <?= $hallazgo['titulo'] ?></h5>
+        </div>
         <div class="card-body">
-            <h5 class="card-title">ID: <?= $hallazgo['id'] ?></h5>
-            <h6 class="card-subtitle mb-2 text-muted">Título: <?= $hallazgo['titulo'] ?></h6>
-            <p class="card-text">Descripción: <?= $hallazgo['descripcion'] ?></p>
-            <p class="card-text">Estado: <?= $hallazgo['estado_nombre'] ?></p>
-            <p class="card-text">Usuario Responsable: <?= $hallazgo['usuario_nombre'] ?></p>
-            <h6>Procesos Asociados:</h6>
-            <ul>
-                <?php foreach ($hallazgo['procesos'] as $proceso): ?>
-                    <li><?= $proceso['nombre'] ?></li>
-                <?php endforeach; ?>
-            </ul>
-            <a href="index.php?entity=hallazgo&action=edit&id=<?= $hallazgo['id'] ?>" class="btn btn-warning">Editar</a>
-            <a href="index.php?entity=hallazgo&action=delete&id=<?= $hallazgo['id'] ?>" class="btn btn-danger" onclick="return confirm('¿Está seguro de eliminar este hallazgo?')">Eliminar</a>
-            <a href="index.php?entity=hallazgo&action=index" class="btn btn-secondary">Volver a la lista</a>
+            <div class="row">
+                <div class="col-md-8">
+                    <p><strong>Descripción:</strong></p>
+                    <p class="card-text"><?= nl2br($hallazgo['descripcion']) ?></p>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">Información General</div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Estado:</strong> <?= $hallazgo['estado_nombre'] ?></li>
+                            <li class="list-group-item"><strong>Usuario Responsable:</strong> <?= $hallazgo['usuario_nombre'] ?></li>
+                            <!-- Mostrar sede (nuevo) -->
+                            <li class="list-group-item"><strong>Sede:</strong> <?= $hallazgo['sede_nombre'] ?? 'No asignada' ?></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <h6>Procesos Asociados:</h6>
+                <?php if (empty($hallazgo['procesos'])): ?>
+                    <p class="text-muted">No hay procesos asociados a este hallazgo.</p>
+                <?php else: ?>
+                    <ul class="list-group">
+                        <?php foreach ($hallazgo['procesos'] as $proceso): ?>
+                            <li class="list-group-item"><?= $proceso['nombre'] ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+            
+            <div class="mt-4">
+                <a href="index.php?entity=hallazgo&action=edit&id=<?= $hallazgo['id'] ?>" class="btn btn-warning">Editar</a>
+                <a href="index.php?entity=hallazgo&action=delete&id=<?= $hallazgo['id'] ?>" class="btn btn-danger" onclick="return confirm('¿Está seguro de eliminar este hallazgo?')">Eliminar</a>
+                <a href="index.php?entity=hallazgo&action=index" class="btn btn-secondary">Volver a la lista</a>
+            </div>
         </div>
     </div>
 </div>

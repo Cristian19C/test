@@ -19,7 +19,14 @@ class HallazgoController {
     }
 
     public function index() {
-        $hallazgos = $this->model->getAll();
+
+        //agregar filtro si esta presente
+        $filtro_sede = isset($_GET['sede']) ? $_GET['sede']: null;
+
+        $hallazgos = $this->model->getAll($filtro_sede);
+
+        $sedes = $this->model->getSedes();
+
         require 'views/hallazgo/list.php';
     }
 
@@ -32,6 +39,8 @@ class HallazgoController {
         $procesos = $this->procesoModel->getAll();
         $estados = $this->estadoModel->getAll();
         $usuarios = $this->usuarioModel->getAll();
+        $sedes = $this->model->getSedes();
+
         require 'views/hallazgo/create.php';
     }
 
@@ -41,8 +50,9 @@ class HallazgoController {
         $proceso_ids = $data['procesos'] ?? [];
         $id_estado = $data['id_estado'];
         $id_usuario = $data['id_usuario'];
+        $id_proceso_sede = $data['id_proceso_sede'] ?? null;
 
-        $this->model->insert($titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario);
+        $this->model->insert($titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario, $id_proceso_sede);
         header('Location: index.php?entity=hallazgo&action=index');
     }
 
@@ -51,6 +61,7 @@ class HallazgoController {
         $procesos = $this->procesoModel->getAll();
         $estados = $this->estadoModel->getAll();
         $usuarios = $this->usuarioModel->getAll();
+        $sedes = $this->model->getSedes();
         $selectedProcesos = $this->model->getProcesos($hallazgo['id']);
         $selectedProcesoIds = array_column($selectedProcesos, 'id');
         require 'views/hallazgo/edit.php';
@@ -62,8 +73,9 @@ class HallazgoController {
         $proceso_ids = $data['procesos'] ?? [];
         $id_estado = $data['id_estado'];
         $id_usuario = $data['id_usuario'];
+        $id_proceso_sede = $data['id_proceso_sede'] ?? null;
 
-        $this->model->update($id, $titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario);
+        $this->model->update($id, $titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario, $id_proceso_sede);
         header('Location: index.php?entity=hallazgo&action=index');
     }
 
