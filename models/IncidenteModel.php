@@ -28,7 +28,14 @@ class IncidenteModel {
             WHERE i.id = ?
         ");
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Retornar false o null si no hay resultados
+        if (!$result) {
+            return null;
+        }
+        
+        return $result;
     }
 
     public function insert($descripcion, $fecha_ocurrencia, $id_estado, $id_usuario) {
@@ -39,5 +46,10 @@ class IncidenteModel {
     public function update($id, $descripcion, $fecha_ocurrencia, $id_estado, $id_usuario) {
         $stmt = $this->pdo->prepare("UPDATE Incidente SET descripcion = ?, fecha_ocurrencia = ?, id_estado = ?, id_usuario = ? WHERE id = ?");
         return $stmt->execute([$descripcion, $fecha_ocurrencia, $id_estado, $id_usuario, $id]);
+    }
+
+    public function delete($id) {
+        $stmt = $this->pdo->prepare("DELETE FROM Incidente WHERE id = ?");
+        return $stmt->execute([$id]);
     }
 }
