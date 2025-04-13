@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div class="container mt-4">
+    <div class="container-wide mt-4 mb-5">
 
         <div id="alertMessage" class="alert alert-float" role="alert"></div>
 
@@ -92,7 +92,7 @@
                                 <td><?= $hallazgo['usuario_nombre'] ?></td>
                                 <td><?= $hallazgo['sede_nombre'] ?? 'No asignada' ?></td>
                                 <td>
-                                    <ul class="list-unstyled">
+                                    <ul>
                                         <?php foreach ($hallazgo['procesos'] as $proceso): ?>
                                             <li><small><?= $proceso['nombre'] ?></small></li>
                                         <?php endforeach; ?>

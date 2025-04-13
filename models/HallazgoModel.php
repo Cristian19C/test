@@ -17,11 +17,12 @@ class HallazgoModel {
             LEFT JOIN Estado e ON h.id_estado = e.id
             LEFT JOIN Usuario u ON h.id_usuario = u.id
             LEFT JOIN Proceso p ON h.id_proceso_sede = p.id
+            WHERE h.isActive = TRUE
         ";
 
         // Añadir filtro si se proporciona 
         if($filtro_sede){
-            $main_query .= "WHERE h.id_proceso_sede = ?";
+            $main_query .= "AND h.id_proceso_sede = ?";
             $stmt = $this->pdo->prepare($main_query);
             $stmt->execute([$filtro_sede]);
         }else{
@@ -43,7 +44,7 @@ class HallazgoModel {
             LEFT JOIN Estado e ON h.id_estado = e.id
             LEFT JOIN Usuario u ON h.id_usuario = u.id
             LEFT JOIN Proceso p ON h.id_proceso_sede = p.id
-            WHERE h.id = ?
+            WHERE h.id = ? AND h.isActive = TRUE
         ");
         $stmt->execute([$id]);
         $hallazgo = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -55,7 +56,7 @@ class HallazgoModel {
     }
 
     public function insert($titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario, $id_proceso_sede) {
-        $stmt = $this->pdo->prepare("INSERT INTO Hallazgo (titulo, descripcion, id_estado, id_usuario,id_proceso_sede) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $this->pdo->prepare("INSERT INTO Hallazgo (titulo, descripcion, id_estado, id_usuario, id_proceso_sede, isActive) VALUES (?, ?, ?, ?, ?, TRUE)");
         $result = $stmt->execute([$titulo, $descripcion, $id_estado, $id_usuario, $id_proceso_sede]);
 
         if ($result) {
@@ -67,7 +68,7 @@ class HallazgoModel {
     }
 
     public function update($id, $titulo, $descripcion, $proceso_ids, $id_estado, $id_usuario, $id_proceso_sede) {
-        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET titulo = ?, descripcion = ?, id_estado = ?, id_usuario = ?, id_proceso_sede = ? WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET titulo = ?, descripcion = ?, id_estado = ?, id_usuario = ?, id_proceso_sede = ? WHERE id = ? AND isActive = TRUE");
         $result = $stmt->execute([$titulo, $descripcion, $id_estado, $id_usuario, $id_proceso_sede,$id]);
 
         if ($result) {
@@ -79,7 +80,7 @@ class HallazgoModel {
 
     //Nuevo metodo para actualizar solo el estado del hallazgo
     public function updateEstado($id, $id_estado){
-        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET id_estado = ? WHERE id =?");
+        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET id_estado = ? WHERE id =? AND isActive = TRUE");
         $result = $stmt->execute([$id_estado, $id]);
 
         if($result){
@@ -99,7 +100,8 @@ class HallazgoModel {
     }
 
     public function delete($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM Hallazgo WHERE id = ?");
+        // Hacer un borrado logico
+        $stmt = $this->pdo->prepare("UPDATE Hallazgo SET isActive = FALSE WHERE id = ?");
         return $stmt->execute([$id]);
     }
 	
