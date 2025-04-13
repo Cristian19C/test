@@ -19,7 +19,37 @@ class IncidenteController {
     }
 
     public function index() {
-        $incidentes = $this->model->getAll();
+        // Verificar si hay un id de busqueda
+        $busqueda_id = isset($_GET['busqueda_id']) ? trim($_GET['busqueda_id']) : null;
+        
+        // Si hay un id de busqueda, validar que sea numerico
+        if ($busqueda_id !== null && $busqueda_id !== '' && !is_numeric($busqueda_id)) {
+            // Si no es numerico mostrar mensaje de error
+            $error_mensaje = "El ID debe ser un valor numérico.";
+            $incidentes = $this->model->getAll(); // Cargar todos para mostrar la lista completa
+        } 
+        // Si es numerico o esta vacio
+        else {
+            $error_mensaje = null;
+            
+            if ($busqueda_id !== null && $busqueda_id !== '') {
+                // Buscar por id especifico
+                $incidente = $this->model->getById($busqueda_id);
+                
+                if ($incidente) {
+                    // Crear un array con ese unico incidente
+                    $incidentes = [$incidente];
+                } else {
+                    // Mostrar lista vacia y mensaje
+                    $incidentes = [];
+                    $error_mensaje = "No se encontró ningún incidente con ID: $busqueda_id";
+                }
+            } else {
+                // Si no existe busqueda, obtener todos los incidentes
+                $incidentes = $this->model->getAll();
+            }
+        }
+        
         require 'views/incidente/list.php';
     }
 
