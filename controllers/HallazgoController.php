@@ -98,7 +98,7 @@ class HallazgoController {
 
     public function delete($id) {
         $this->model->delete($id);
-        header('Location: index.php?action=index');
+        header('Location: index.php?entity=hallazgo&action=index');
     }
 
     //Metodos para los planes de accion
